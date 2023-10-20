@@ -24,8 +24,7 @@ interval = 1 # 秒
 nvitop_logger_process = multiprocessing.Process(target=run_nvitop_logger, args=(external_root_pids, writer))
 nvitop_logger_process.start()
 
-# ... 你的主進程代碼
-time.sleep(60)
+time.sleep(60)  # ... 你的主進程代碼
 
 # 確保在主進程退出時終止 nvitop_logger_process
 nvitop_logger_process.terminate()

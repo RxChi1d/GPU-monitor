@@ -6,31 +6,50 @@ This project provides a Python script for monitoring GPU resources using the `nv
 
 To use this project, you will need to have Python 3 installed on your system. You can install the required Python packages using pip:
 
+```shell
+pip install nvitop
 ```
-pip install nvitop tensorboardX
+Because it will use the SummaryWriter, you also need to install tensorboardX or torch.utils.tensorboard
+```shell
+# if you don't want to install pytorch, you can use tensorboardX
+pip install tensorboardX
 ```
+
 
 ## Usage
 
-To run the GPU monitor, you need to import the `run_nvitop_logger` from the GPU_monitor.py file.  
-To avoid affecting the main program, please use `multiprocessing` to run `run_nvitop_logger`. For example:
+Download the respository to your project directory:
+```shell
+git clone https://github.com/RxChi1d/GPU_monitor.git
+```
+The structure is as follows:
+```
+- your_project
+    - GPU_monitor
+        - monitor.py
+    - your_main.py
+```
+Import the `run_nvitop_logger` from GPU_monitor such as `sample.py`:
+```python
+from GPU_monitor import run_nvitop_logger
 
-```Python
-# Assume external_root_pids is either None or a set of pids
-external_root_pids = {os.getpid()}  # or {pid1, pid2, ...}
-writer = SummaryWriter('runs')
-interval = 1 # seconds
+if __name__ == "__main__":
+    external_root_pids = {os.getpid()}
+    writer = SummaryWriter('./runs')
 
-nvitop_logger_process = multiprocessing.Process(target=run_nvitop_logger, args=(external_root_pids, writer))
-nvitop_logger_process.start()
+    run_nvitop_logger(external_root_pids, writer)
 
-time.sleep(60)  # ... your main process code
+    # ... your main process code
+    for i in range(60):
+        print(f"i: {i}")
+        time.sleep(1)
 
-# Ensure the nvitop_logger_process is terminated when the main process exits
-nvitop_logger_process.terminate()
+    # Exit the program
 ```
 
-The script will start logging GPU resource metrics to TensorBoard. You can view the metrics by running TensorBoard and navigating to the appropriate URL in your web browser:
+The script will start logging GPU resource metrics to TensorBoard, and it won't interfere with your main process. When your main process exits, the script will automatically stop logging metrics.   
+  
+You can view the metrics by running TensorBoard and navigating to the appropriate URL in your web browser:
 
 ```Shell
 tensorboard --logdir=runs
